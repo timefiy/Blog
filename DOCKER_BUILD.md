@@ -32,7 +32,7 @@ docker build -t blog-backend:latest ./blog-backend
 先执行 pnpm 构建（跳过 husky）：
 
 ```bash
-cd blog-frontend/kuailemao-admin && set HUSKY=0 && pnpm install && pnpm build && cd ../..
+cd blog-frontend/kuailemao-admin && set HUSKY=0&& pnpm install && pnpm build && cd ../..
 docker build -t blog-admin:latest ./blog-frontend/kuailemao-admin
 ```
 
@@ -41,16 +41,8 @@ docker build -t blog-admin:latest ./blog-frontend/kuailemao-admin
 先执行 pnpm 构建（跳过 husky）：
 
 ```bash
-cd blog-frontend/kuailemao-blog && set HUSKY=0 && pnpm install && pnpm build && cd ../..
+cd blog-frontend/kuailemao-blog && set HUSKY=0&& pnpm install && pnpm build && cd ../..
 docker build -t blog-front:latest ./blog-frontend/kuailemao-blog
-```
-
-### 一键构建全部
-
-需先完成后端和前端源码构建，再执行：
-
-```bash
-docker compose build
 ```
 
 ## 启动服务
@@ -58,6 +50,9 @@ docker compose build
 ### 启动全部
 
 ```bash
+# 如果在云端注意拉取
+# docker compose pull
+
 docker compose up -d
 ```
 

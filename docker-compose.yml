@@ -3,10 +3,7 @@ version: '3.8'
 services:
   # MySQL 数据库
   mysql:
-    build:
-      context: ./sql
-      dockerfile: Dockerfile
-    image: blog-mysql:latest
+    image: timeflyflower/blog-mysql:latest
     container_name: blog-mysql
     restart: unless-stopped
     environment:
@@ -72,59 +69,56 @@ services:
 
   # 后端服务
   backend:
-    build:
-      context: ./blog-backend
-      dockerfile: Dockerfile
-    image: blog-backend:latest
+    image: timeflyflower/blog-backend:latest
     container_name: blog-backend
     restart: unless-stopped
     ports:
       - "8088:8088"
     environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/blog?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Hong_Kong
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:mysql://mysql:3306/blog?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Hong_Kong}
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: "6379"
-      SPRING_DATA_REDIS_DATABASE: "1"
+      SPRING_DATA_REDIS_DATABASE: ${SPRING_DATA_REDIS_DATABASE:-1}
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: "5672"
       SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER:-admin}
       SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS}
       SPRING_SECURITY_JWT_KEY: ${SPRING_SECURITY_JWT_KEY}
-      SPRING_SECURITY_JWT_EXPIRE: "7"
-      SPRING_RABBITMQ_QUEUE_EMAIL: email_queue
-      SPRING_RABBITMQ_QUEUE_LOG_LOGIN: log_login_queue
-      SPRING_RABBITMQ_QUEUE_LOG_SYSTEM: log_system_queue
-      SPRING_RABBITMQ_EXCHANGE_EMAIL: email_exchange
-      SPRING_RABBITMQ_EXCHANGE_LOG: log_exchange
-      SPRING_RABBITMQ_ROUTINGKEY_EMAIL: email_routing_key
-      SPRING_RABBITMQ_ROUTINGKEY_LOG_LOGIN: log_routing_key_login
-      SPRING_RABBITMQ_ROUTINGKEY_LOG_SYSTEM: log_routing_key_system
+      SPRING_SECURITY_JWT_EXPIRE: ${SPRING_SECURITY_JWT_EXPIRE:-7}
+      SPRING_RABBITMQ_QUEUE_EMAIL: ${SPRING_RABBITMQ_QUEUE_EMAIL:-email_queue}
+      SPRING_RABBITMQ_QUEUE_LOG_LOGIN: ${SPRING_RABBITMQ_QUEUE_LOG_LOGIN:-log_login_queue}
+      SPRING_RABBITMQ_QUEUE_LOG_SYSTEM: ${SPRING_RABBITMQ_QUEUE_LOG_SYSTEM:-log_system_queue}
+      SPRING_RABBITMQ_EXCHANGE_EMAIL: ${SPRING_RABBITMQ_EXCHANGE_EMAIL:-email_exchange}
+      SPRING_RABBITMQ_EXCHANGE_LOG: ${SPRING_RABBITMQ_EXCHANGE_LOG:-log_exchange}
+      SPRING_RABBITMQ_ROUTINGKEY_EMAIL: ${SPRING_RABBITMQ_ROUTINGKEY_EMAIL:-email_routing_key}
+      SPRING_RABBITMQ_ROUTINGKEY_LOG_LOGIN: ${SPRING_RABBITMQ_ROUTINGKEY_LOG_LOGIN:-log_routing_key_login}
+      SPRING_RABBITMQ_ROUTINGKEY_LOG_SYSTEM: ${SPRING_RABBITMQ_ROUTINGKEY_LOG_SYSTEM:-log_routing_key_system}
 
-      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-smtp.qq.com}
+      SPRING_MAIL_HOST:   
       SPRING_MAIL_PORT: ${SPRING_MAIL_PORT:-587}
       SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
       SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH:-true}
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE:-true}
 
-      MAIL_ARTICLE_EMAIL_NOTICE: "false"
-      MAIL_ARTICLE_REPLY_NOTICE: "false"
-      MAIL_MESSAGE_EMAIL_NOTICE: "false"
-      MAIL_MESSAGE_REPLY_NOTICE: "false"
-      MAIL_MESSAGE_NEW_NOTICE: "false"
-      MAIL_APPLY_NOTICE: "false"
-      MAIL_PASS_NOTICE: "false"
-      MAIL_LINK_APPLY_REDIRECT_URI: http://localhost:8088/link/email/apply
-      WEB_INDEX_PATH: http://localhost/
+      MAIL_ARTICLE_EMAIL_NOTICE: ${MAIL_ARTICLE_EMAIL_NOTICE:-false}
+      MAIL_ARTICLE_REPLY_NOTICE: ${MAIL_ARTICLE_REPLY_NOTICE:-false}
+      MAIL_MESSAGE_EMAIL_NOTICE: ${MAIL_MESSAGE_EMAIL_NOTICE:-false}
+      MAIL_MESSAGE_REPLY_NOTICE: ${MAIL_MESSAGE_REPLY_NOTICE:-false}
+      MAIL_MESSAGE_NEW_NOTICE: ${MAIL_MESSAGE_NEW_NOTICE:-false}
+      MAIL_APPLY_NOTICE: ${MAIL_APPLY_NOTICE:-false}
+      MAIL_PASS_NOTICE: ${MAIL_PASS_NOTICE:-false}
+      MAIL_LINK_APPLY_REDIRECT_URI: ${MAIL_LINK_APPLY_REDIRECT_URI:-http://admin.zhuyuxi.xyz:81/api/link/email/apply}
+      WEB_INDEX_PATH: ${WEB_INDEX_PATH:-http://www.zhuyuxi.xyz/}
 
       MINIO_ENDPOINT: http://minio:9000
       MINIO_ACCESSKEY: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_SECRETKEY: ${MINIO_ROOT_PASSWORD}
-      MINIO_BUCKETNAME: blog
+      MINIO_BUCKETNAME: ${MINIO_BUCKETNAME:-blog}
     depends_on:
       mysql:
         condition: service_healthy
@@ -139,10 +133,7 @@ services:
 
   # 后台管理前端
   admin:
-    build:
-      context: ./blog-frontend/kuailemao-admin
-      dockerfile: Dockerfile
-    image: blog-admin:latest
+    image: timeflyflower/blog-admin:latest
     container_name: blog-admin
     restart: unless-stopped
     ports:
@@ -154,10 +145,7 @@ services:
 
   # 前台博客
   blog:
-    build:
-      context: ./blog-frontend/kuailemao-blog
-      dockerfile: Dockerfile
-    image: blog-front:latest
+    image: timeflyflower/blog-front:latest
     container_name: blog-front
     restart: unless-stopped
     ports:
