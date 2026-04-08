@@ -67,6 +67,23 @@ services:
     networks:
       - blog-network
 
+  # MinIO 初始化（自动创建桶）
+  minio-init:
+    image: minio/mc:latest
+    container_name: blog-minio-init
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_started
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD}; do sleep 2; done &&
+      mc mb --ignore-existing local/${MINIO_BUCKETNAME:-blog} &&
+      mc anonymous set download local/${MINIO_BUCKETNAME:-blog}
+      "
+    networks:
+      - blog-network
+
   # 后端服务
   backend:
     image: timeflyflower/blog-backend:latest
@@ -116,6 +133,7 @@ services:
       WEB_INDEX_PATH: ${WEB_INDEX_PATH:-http://www.zhuyuxi.xyz/}
 
       MINIO_ENDPOINT: http://minio:9000
+      MINIO_PUBLIC_ENDPOINT: ${MINIO_PUBLIC_ENDPOINT:-https://image.zhuyuxi.xyz}
       MINIO_ACCESSKEY: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_SECRETKEY: ${MINIO_ROOT_PASSWORD}
       MINIO_BUCKETNAME: ${MINIO_BUCKETNAME:-blog}
@@ -128,6 +146,8 @@ services:
         condition: service_started
       minio:
         condition: service_started
+      minio-init:
+        condition: service_completed_successfully
     networks:
       - blog-network
 

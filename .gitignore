@@ -5,9 +5,13 @@ yarn-error.log
 blog.iml
 ruyu-blog-doc/
 
+dependencies.txt
+
 *.code-workspace
 
 .env
 
 .idea
+.windsurf
 .vscode
+.cursor

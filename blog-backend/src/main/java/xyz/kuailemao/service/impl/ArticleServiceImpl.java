@@ -271,7 +271,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 return ResponseResult.failure("上传格式错误");
         } catch (Exception e) {
             log.error("文章封面上传失败", e);
-            return ResponseResult.failure();
+            return ResponseResult.failure("upload article cover failed");
         }
     }
 
@@ -281,16 +281,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Transactional
     @Override
     public ResponseResult<Void> publish(ArticleDTO articleDTO) {
-        Article article = articleDTO.asViewObject(Article.class, v -> v.setUserId(SecurityUtils.getUserId()));
-        if (this.saveOrUpdate(article)) {
+        try {
+            Article article = articleDTO.asViewObject(Article.class, v -> v.setUserId(SecurityUtils.getUserId()));
+            if (this.saveOrUpdate(article)) {
             // 清除标签关系
-            articleTagMapper.deleteById(article.getId());
+            articleTagMapper.delete(new LambdaQueryWrapper<ArticleTag>().eq(ArticleTag::getArticleId, article.getId()));
             // 新增标签关系
-            List<ArticleTag> articleTags = articleDTO.getTagId().stream().map(articleTag -> ArticleTag.builder().articleId(article.getId()).tagId(articleTag).build()).toList();
-            articleTagService.saveBatch(articleTags);
-            return ResponseResult.success();
+            List<ArticleTag> articleTags = articleDTO.getTagId().stream()
+                    .map(articleTag -> ArticleTag.builder().articleId(article.getId()).tagId(articleTag).build())
+                    .toList();
+            if (articleTags.isEmpty() || articleTagService.saveBatch(articleTags))
+                return ResponseResult.success();
+
+            return ResponseResult.failure("save article tags failed");
+            }
+            return ResponseResult.failure("save article failed");
+        } catch (Exception e) {
+            log.error("publish article failed", e);
+            return ResponseResult.failure("publish article failed");
         }
-        return ResponseResult.failure();
     }
 
     @Value("${minio.bucketName}")
@@ -320,7 +329,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         } catch (Exception e) {
             log.error("文章图片上传失败", e);
         }
-        return null;
+        return ResponseResult.failure("upload article image failed");
     }
 
     @Override
