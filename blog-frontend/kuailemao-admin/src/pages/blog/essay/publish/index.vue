@@ -151,7 +151,7 @@ async function addTagFunc(e: MouseEvent) {
 async function beforeUpload(file: UploadProps['fileList'][number]) {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp'
   if (!isJpgOrPng) {
-    message.error('???????jpg?png?webp')
+    message.error('图片只能是 JPG/PNG/WebP 格式!')
     return false
   }
 
