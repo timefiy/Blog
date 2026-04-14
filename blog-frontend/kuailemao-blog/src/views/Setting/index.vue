@@ -98,7 +98,7 @@ const beforeAvatarUpload:  UploadProps['beforeUpload'] = async (rawFile) => {
     return false
   }
 
-  // OPTIMIZE：PNG压缩可能压缩不到0.3MB
+  // OPTIMIZE：PNG压缩可能压缩不到0.3MB导致上传失败，后续优化一下算法
   // INFO：这里对图片的进行限制0.3MB，下面imageConversion函数会对图片进行压缩，参数为0.28
   // 压缩后的图片如果仍然超过0.3MB则提示用户更换更小的图片
   const limitMb = 0.3

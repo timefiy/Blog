@@ -15,3 +15,9 @@ dependencies.txt
 .windsurf
 .vscode
 .cursor
+
+# AI
+.codex
+.claude
+
+.playwright-cli
