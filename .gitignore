@@ -19,5 +19,5 @@ dependencies.txt
 # AI
 .codex
 .claude
-
 .playwright-cli
+.git-change-playwright-regression

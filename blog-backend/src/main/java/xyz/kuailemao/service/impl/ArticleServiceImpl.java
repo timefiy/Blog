@@ -164,7 +164,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public ArticleDetailVO getArticleDetail(Integer id) {
+    public ArticleDetailVO getArticleDetail(Long id) {
         Article article = articleMapper.selectOne(new LambdaQueryWrapper<Article>().eq(Article::getStatus, SQLConst.PUBLIC_ARTICLE).and(i -> i.eq(Article::getId, id)));
         if (StringUtils.isNull(article)) return null;
         // 文章分类
@@ -197,7 +197,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public List<RelatedArticleVO> relatedArticleList(Integer categoryId, Integer articleId) {
+    public List<RelatedArticleVO> relatedArticleList(Long categoryId, Long articleId) {
         // 文章id不等于当前文章id,相关推荐排除自己，5条
         List<Article> articles = articleMapper.selectList(
                 new LambdaQueryWrapper<Article>()
